@@ -157,7 +157,7 @@ for k=0:couples_count-1
         %maxIndex_h_w.n4s2 = find(resultMatrix_h_w(7,:)==max(resultMatrix_h_w(7,:)));
         %maxIndex_w_h.n4s2 = find(resultMatrix(7,:)==max(resultMatrix(7,:)));
         
-        maxixtemp = mean(resultMatrix([5 6],:),2);
+        maxixtemp = mean(resultMatrix([5 6],:),1);
         maxIndex = find(maxixtemp==max(maxixtemp));
         
         fprintf('Fit percentage: %.1f %.1f\n',resultMatrix(5,maxIndex),resultMatrix(6,maxIndex));
@@ -291,7 +291,7 @@ for k=0:couples_count-1
                     [couple(savedIndex).f_name ['eig_' num2str(i)]];
             end
             % --- damping ratio
-            [freq_temp,damp_temp,~] = damp(n4s2);
+            [freq_temp,damp_temp,~] = damp(n4tmp);
             freq_temp = freq_temp';
             damp_temp = damp_temp';
             couple(savedIndex).feature = ...

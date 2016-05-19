@@ -8,7 +8,7 @@ function [FitObj,y_train_eval,y_test_eval]=lassoRegression(XTrain,yTrain,XTest,y
     % validate: radio of data used for training over whole train set
     %                       (no input for DEactivate)
     % FitInfo: fitting info from LASSO 
-    % mode = 0: use Test data to find optimal lambda
+    % mode = 0: use built-in Cross Validation of matlab func 'lasso'
     % mode = 1: use validate set to find optimal lambda
     % y_train_eval.{y_guess_train,y_train}
     %----------------------------------------------------------------------
@@ -39,10 +39,10 @@ function [FitObj,y_train_eval,y_test_eval]=lassoRegression(XTrain,yTrain,XTest,y
         y_train = yTrain;
     end 
     
-    %trainSize = size(x_train,1);
-    [B,FitInfo]=lasso(x_train,y_train);
-    total=length(FitInfo.Intercept); %total number of lambda's
     if mode == 1
+        [B,FitInfo]=lasso(x_train,y_train);
+        total=length(FitInfo.Intercept); %total number of lambda's
+        
         valSize = size(x_val,1);
         y_guess = zeros(valSize,total);
         for i=1:valSize
@@ -76,22 +76,31 @@ function [FitObj,y_train_eval,y_test_eval]=lassoRegression(XTrain,yTrain,XTest,y
         FitObj.splitIndex = splitIndex;
         FitObj.validate_error_curve = val_error;
         
-    else 
-        y_guess = zeros(testSize,total);
-        for i=1:testSize
-            for j=1:total
-                y_guess(i,j)=x_test(i,:)*B(:,j)+ FitInfo.Intercept(j);
-            end
-        end
-        val_error = zeros(total,1);
-        for i=1:total
-            val_error(i)=mean((y_test-y_guess(:,i)).^2)/total;
-        end
-        minIndex=find(val_error==min(val_error));
-        BOpt=B(:,minIndex); %column of B optimally results smallest MSE
-        interceptOpt=FitInfo.Intercept(minIndex);
+    else
+        [B,FitInfo]=lasso(x_train,y_train,'CV',10);
+        total=length(FitInfo.Intercept); %total number of lambda's
+        
+%         y_guess = zeros(testSize,total);
+%         for i=1:testSize
+%             for j=1:total
+%                 y_guess(i,j)=x_test(i,:)*B(:,j)+ FitInfo.Intercept(j);
+%             end
+%         end
+%         val_error = zeros(total,1);
+%         for i=1:total
+%             val_error(i)=mean((y_test-y_guess(:,i)).^2)/total;
+%         end
+%         minIndex=find(val_error==min(val_error));
+%         BOpt=B(:,minIndex); %column of B optimally results smallest MSE
+%         interceptOpt=FitInfo.Intercept(minIndex);
+        
+        minIndex = FitInfo.IndexMinMSE;
+        BOpt = B(:,FitInfo.IndexMinMSE);
+        interceptOpt = FitInfo.Intercept(minIndex);
+        
         s=sprintf('min index of lambda: %d\n',minIndex);
         disp(s);
+        
         %----------------use optimal B to predict the TEST set-------------
         y_test_eval = x_test*BOpt+interceptOpt;
         y_error = y_test - y_test_eval;
@@ -106,7 +115,7 @@ function [FitObj,y_train_eval,y_test_eval]=lassoRegression(XTrain,yTrain,XTest,y
         FitObj.B_optimal = BOpt;
         FitObj.intercept_optimal = interceptOpt;
         FitObj.mse = mse;
-        FitObj.test_error_curve = val_error;
+        %FitObj.test_error_curve = val_error;
     end
     
 end
