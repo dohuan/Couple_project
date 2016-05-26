@@ -125,19 +125,19 @@ for j=1:size(tmp,1)
     % --- norm
     couple.feature = ...
         [couple.feature norm(n4tmp,2)];
-    for i=1:length(norm(n4tmp,2))
-        couple.f_name = ...
-            [couple.f_name ['norm-H2-' num2str(j) '-' num2str(i)]];
-    end
+    couple.f_name = ...
+        [couple.f_name ['norm-H2-' num2str(j)]];
+
+    
 %     couple.feature = ...
 %         [couple.feature norm(n4tmp,inf)];
-%     for i=1:length(norm(n4tmp,inf))
-%         couple.f_name = ...
-%             [couple.f_name ['norm-Hinf-' num2str(j) '-' num2str(i)]];
-%     end
+%     couple.f_name = ...
+%         [couple.f_name ['norm-Hinf-' num2str(j) ]];
+   
+
     % --- eigenvalue
     couple.feature = ...
-        [couple.feature (abs(eig(n4tmp)))'];
+        [couple.feature sort((abs(eig(n4tmp))))'];
     eig_track(j,:) = (abs(eig(n4tmp)))';
     for i=1:length(abs(eig(n4tmp)))
         couple.f_name = ...
