@@ -77,3 +77,19 @@ for i=1:length(loadFile)
 end
 
 
+% --- Plot stat of eigenvalue
+eigIx = [2:6 23:27 44:48 65:69 86:90];
+X_ = [];
+for i=1:kfold
+	test_ix = index(i+(i-1)*(spf-1):i+i*(spf-1));
+    X_ = [X_; X(test_ix,eigIx)];
+end
+figure(1)
+suptitle('Both Warm H2')
+for i=1:length(eigIx)
+	subplot(5,5,i)
+	hist(X_(:,i),10);
+	title(couple(1).f_name(eigIx(i)));
+	axis tight
+end
+
