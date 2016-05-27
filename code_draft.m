@@ -83,14 +83,20 @@ eigIx = [2:6];
 X_ = [];
 for i=1:kfold
 	test_ix = index(i+(i-1)*(spf-1):i+i*(spf-1));
-    X_ = [X_; X(test_ix,eigIx)];
+	for j=1:length(test_ix)
+			X_ = [X_; X(test_ix(j),eigIx)];
+	end
+	%X_ = [X_; X(test_ix,eigIx)];
 end
+%for i=1:length(couple)
+%	X_ = [X_;couple(i).feature(1,eigIx)];
+%end
 figure(1)
 suptitle('Both Warm H2')
 for i=1:length(eigIx)
 	subplot(1,5,i)
 	hist(X_(:,i),10);
 	xlabel(['eig-' num2str(i)]);
-	axis tight
+	ylim([0 15])
 end
 
