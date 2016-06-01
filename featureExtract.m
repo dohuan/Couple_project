@@ -120,6 +120,10 @@ end
 
 function couple = featureFromModel(couple, model)
 [V,A] = eig(model.A);
+%[A,I] = sort(diag(A),1,'descend');
+[A,I] = sort(diag(A));
+A = diag(A);
+V = V(:,I);
 C = model.C*V;
 tmp = zeros(size(A,1),1);
 for j=1:size(tmp,1)
@@ -140,13 +144,19 @@ for j=1:size(tmp,1)
    
 
     % --- eigenvalue
+    eigtmp = abs(A)*B;
+    eigtmp = eigtmp(eigtmp~=0);
+    %couple.feature = ...
+    %    [couple.feature sort((abs(eig(n4tmp))))'];
     couple.feature = ...
-        [couple.feature sort((abs(eig(n4tmp))))'];
-    eig_track(j,:) = (abs(eig(n4tmp)))';
-    for i=1:length(abs(eig(n4tmp)))
-        couple.f_name = ...
-            [couple.f_name ['eig-' num2str(j) '-' num2str(i)]];
-    end
+        [couple.feature eigtmp];
+    %eig_track(j,:) = (abs(eig(n4tmp)))';
+%     for i=1:length(abs(eig(n4tmp)))
+%         couple.f_name = ...
+%             [couple.f_name ['eig-' num2str(j) '-' num2str(i)]];
+%     end
+    couple.f_name = ...
+             [couple.f_name ['eig-' num2str(j)]];
     % --- damping ratio
     [freq_temp,damp_temp,~] = damp(n4tmp);
     freq_temp = freq_temp';
@@ -172,11 +182,11 @@ for j=1:size(tmp,1)
             [couple.f_name ['drivenFreq-' num2str(j) '-' num2str(i)]];
     end
 end
-couple.feature = ...
-    [couple.feature (mean(eig_track,2))'];
-for i=1:length(mean(eig_track,2))
-    couple.f_name = ...
-        [couple.f_name ['meanEig-' num2str(i)]];
-end
+% couple.feature = ...
+%     [couple.feature (mean(eig_track,2))'];
+% for i=1:length(mean(eig_track,2))
+%     couple.f_name = ...
+%         [couple.f_name ['meanEig-' num2str(i)]];
+% end
 end
 

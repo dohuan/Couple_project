@@ -105,3 +105,7 @@ for i=1:length(eigIx)
 	ylim([0 20])
 end
 
+
+% --- check descending eigvalue
+eigIx = [2 19 36 53 70];
+
