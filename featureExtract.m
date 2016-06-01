@@ -95,8 +95,12 @@ y = zscore(y);
 for i=1:size(X,2)
     X(:,i) = zscore(X(:,i));
 end
+% for i=1:size(X,1)
+%     X(i,:) = zscore(X(i,:));
+% end
 [y,ix] = sort(y);
 X = X(ix,:);
+couple = couple(ix);
 end
 
 

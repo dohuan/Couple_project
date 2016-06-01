@@ -73,7 +73,7 @@ bar(meanB);
 %hold on
 %errorbar(meanB,std(Btrack),'x');
 
-ix = find(abs(meanB)>0.08);
+ix = find(abs(meanB)>40);
 B_select = meanB(ix);
 for j=1:length(ix)
     text(ix(j)+2, B_select(j), f_name{ix(j)},'BackgroundColor',[1 1 1]);
