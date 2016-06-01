@@ -108,4 +108,9 @@ end
 
 % --- check descending eigvalue
 eigIx = [2 19 36 53 70];
-
+figure(1)
+hold on
+for i=1:length(couple)
+	plot(couple(i).feature(eigIx));
+end
+hold off
