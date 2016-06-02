@@ -122,64 +122,113 @@ function couple = featureFromModel(couple, model)
 [V,A] = eig(model.A);
 %[A,I] = sort(diag(A),1,'descend');
 
-%[A,I] = sort(diag(A));
-%A = diag(A);
-%V = V(:,I);
+[A,I] = sort(diag(A));
+A = diag(A);
+V = V(:,I);
 
 C = model.C*V;
 tmp = zeros(size(A,1),1);
-
+featurevector_r = [];
+featurevector_i = [];
+fname_r = {};
+fname_i = {};
 for j=1:size(tmp,1)
     B = tmp;
     B(j,:) = 1;
     n4tmp = ss(A,B,C,[], .5);
     
-    % --- norm
-    featurevector = ...
-        [featurevector norm(n4tmp,2)];
-    fname = ...
-        [fname ['norm-H2-r-' num2str(j)]];
-    
-    %         featurevector_r = ...
-    %             [featurevector_r norm(n4tmp,inf)];
-    %         fname_r = ...
-    %             [fname_r ['norm-Hinf-r-' num2str(j)]];
-    
-    % --- eigenvalue
-    eigtmp = abs(A)*B;
-    eigtmp = eigtmp(eigtmp~=0);
-    %couple.feature = ...
-    %    [couple.feature sort((abs(eig(n4tmp))))'];
-    featurevector = ...
-        [featurevector eigtmp];
-    fname = ...
-        [fname ['eig-r-' num2str(j)]];
-    % --- damping ratio
-    [freq_temp,damp_temp,~] = damp(n4tmp);
-    freq_temp = freq_temp';
-    damp_temp = damp_temp';
-    featurevector = ...
-        [featurevector freq_temp];
-    for i=1:length(freq_temp)
-        fname = ...
-            [fname ['naFreq-r-' num2str(j) '-' num2str(i)]];
-    end
-    featurevector = ...
-        [featurevector damp_temp];
-    for i=1:length(damp_temp)
-        fname = ...
-            [fname ['damp-r-' num2str(j) '-' num2str(i)]];
-    end
-    % --- driven frequency \omega_d
-    featurevector = ...
-        [featurevector freq_temp.*sqrt(1-damp_temp.^2)];
-    for i=1:length(freq_temp)
-        fname = ...
-            [fname ['dampFreq-r-' num2str(j) '-' num2str(i)]];
+    if(imag(A(j,j))==0)
+        % --- norm
+        featurevector_r = ...
+            [featurevector_r norm(n4tmp,2)];
+        fname_r = ...
+            [fname_r ['norm-H2-r-' num2str(j)]];
+        
+        %         featurevector_r = ...
+        %             [featurevector_r norm(n4tmp,inf)];
+        %         fname_r = ...
+        %             [fname_r ['norm-Hinf-r-' num2str(j)]];
+        
+        % --- eigenvalue
+        eigtmp = abs(A)*B;
+        eigtmp = eigtmp(eigtmp~=0);
+        %couple.feature = ...
+        %    [couple.feature sort((abs(eig(n4tmp))))'];
+        featurevector_r = ...
+            [featurevector_r eigtmp];
+        fname_r = ...
+            [fname_r ['eig-r-' num2str(j)]];
+        % --- damping ratio
+        [freq_temp,damp_temp,~] = damp(n4tmp);
+        freq_temp = freq_temp';
+        damp_temp = damp_temp';
+        featurevector_r = ...
+            [featurevector_r freq_temp];
+        for i=1:length(freq_temp)
+            fname_r = ...
+                [fname_r ['naFreq-r-' num2str(j) '-' num2str(i)]];
+        end
+        featurevector_r = ...
+            [featurevector_r damp_temp];
+        for i=1:length(damp_temp)
+            fname_r = ...
+                [fname_r ['damp-r-' num2str(j) '-' num2str(i)]];
+        end
+        % --- driven frequency \omega_d
+        featurevector_r = ...
+            [featurevector_r freq_temp.*sqrt(1-damp_temp.^2)];
+        for i=1:length(freq_temp)
+            fname_r = ...
+                [fname_r ['dampFreq-r-' num2str(j) '-' num2str(i)]];
+        end
+    else
+        % --- norm
+        featurevector_i = ...
+            [featurevector_i norm(n4tmp,2)];
+        fname_i = ...
+            [fname_i ['norm-H2-i-' num2str(j)]];
+        
+        %         featurevector_r = ...
+        %             [featurevector_r norm(n4tmp,inf)];
+        %         fname_r = ...
+        %             [fname_r ['norm-Hinf-r-' num2str(j)]];
+        
+        % --- eigenvalue
+        eigtmp = abs(A)*B;
+        eigtmp = eigtmp(eigtmp~=0);
+        %couple.feature = ...
+        %    [couple.feature sort((abs(eig(n4tmp))))'];
+        featurevector_i = ...
+            [featurevector_i eigtmp];
+        fname_i = ...
+            [fname_i ['eig-i-' num2str(j)]];
+        % --- damping ratio
+        [freq_temp,damp_temp,~] = damp(n4tmp);
+        freq_temp = freq_temp';
+        damp_temp = damp_temp';
+        featurevector_i = ...
+            [featurevector_i freq_temp];
+        for i=1:length(freq_temp)
+            fname_i = ...
+                [fname_i ['naFreq-i-' num2str(j) '-' num2str(i)]];
+        end
+        featurevector_i = ...
+            [featurevector_i damp_temp];
+        for i=1:length(damp_temp)
+            fname_i = ...
+                [fname_i ['damp-i-' num2str(j) '-' num2str(i)]];
+        end
+        % --- driven frequency \omega_d
+        featurevector_i = ...
+            [featurevector_i freq_temp.*sqrt(1-damp_temp.^2)];
+        for i=1:length(freq_temp)
+            fname_i = ...
+                [fname_i ['dampFreq-i-' num2str(j) '-' num2str(i)]];
+        end
     end
 end
-
-
+couple.feature = [featurevector_r featurevector_i];
+couple.f_name = [fname_r fname_i];
 end
 
 
