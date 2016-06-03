@@ -124,6 +124,10 @@ tau = 1./(wn.*xeta);
 [~,ix] = sort(tau);
 
 [V,A] = eig(model.A);
+A = diag(A);
+A = A(ix);
+A = diag(A);
+V = V(:,ix);
 %[A,I] = sort(diag(A),1,'descend');
 
 %[A,I] = sort(diag(A));
@@ -139,10 +143,10 @@ for j=1:size(tmp,1)
     n4tmp = ss(A,B,C,[], .5);
     
     % --- norm
-    featurevector = ...
+    couple.feature = ...
         [featurevector norm(n4tmp,2)];
-    fname = ...
-        [fname ['norm-H2-r-' num2str(j)]];
+    couple.fname = ...
+        [couple.fname ['norm-H2-' num2str(j)]];
     
     %         featurevector_r = ...
     %             [featurevector_r norm(n4tmp,inf)];
