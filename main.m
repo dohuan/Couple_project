@@ -70,9 +70,9 @@ f_name = couple(1).f_name;
 h = figure(1);
 meanB = mean(Btrack);
 bar(meanB);
-%hold on
-%errorbar(meanB,std(Btrack),'x');
-ix = find(abs(meanB)>0.4);
+hold on
+errorbar(meanB,std(Btrack),'x');
+ix = find(abs(meanB)>0.1);
 B_select = meanB(ix);
 for j=1:length(ix)
     text(ix(j)+2, B_select(j), f_name{ix(j)},'BackgroundColor',[1 1 1]);
