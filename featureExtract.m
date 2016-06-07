@@ -121,7 +121,7 @@ end
 function couple = featureFromModel(couple, model)
 [wn,xeta] = damp(model);
 tau = 1./(wn.*xeta);
-[~,ix] = sort(tau);
+[tautmp,ix] = sort(tau);
 
 [V,A] = eig(model.A);
 A = diag(A);
@@ -136,6 +136,9 @@ V = V(:,ix);
 
 C = model.C*V;
 tmp = zeros(size(A,1),1);
+eigtmp = abs(eig(A));
+[freq_tmp,damp_tmp,~] = damp(model);
+dampfreq_tmp = freq_tmp.*sqrt(1-damp_tmp.^2);
 
 for j=1:size(tmp,1)
     B = tmp;
@@ -144,48 +147,73 @@ for j=1:size(tmp,1)
     
     % --- norm
     couple.feature = ...
-        [featurevector norm(n4tmp,2)];
-    couple.fname = ...
-        [couple.fname ['norm-H2-' num2str(j)]];
-    
+        [couple.feature norm(n4tmp,2)];
+    couple.f_name = ...
+        [couple.f_name ['norm-H2-' num2str(j)]];
+    % --- eigvalue
+    couple.feature = ...
+        [couple.feature eigtmp(j)];
+    couple.f_name = ...
+        [couple.f_name ['eig-' num2str(j)]];
+    % --- natural freq
+    couple.feature = ...
+        [couple.feature freq_tmp(j)];
+    couple.f_name = ...
+        [couple.f_name ['naFreq-' num2str(j)]];
+    % --- damping ratio
+    couple.feature = ...
+        [couple.feature damp_tmp(j)];
+    couple.f_name = ...
+        [couple.f_name ['damp-' num2str(j)]];
+    % --- damping freq
+    couple.feature = ...
+        [couple.feature dampfreq_tmp(j)];
+    couple.f_name = ...
+        [couple.f_name ['dampFreq-' num2str(j)]];
+    % --- time constant
+    couple.feature = ...
+        [couple.feature tautmp(j)];
+    couple.f_name = ...
+        [couple.f_name ['tau-' num2str(j)]];
+    % --- 
     %         featurevector_r = ...
     %             [featurevector_r norm(n4tmp,inf)];
     %         fname_r = ...
     %             [fname_r ['norm-Hinf-r-' num2str(j)]];
 end
 
-% --- eigenvalue
-eigtmp = abs(A)*B;
-eigtmp = eigtmp(eigtmp~=0);
-%couple.feature = ...
-%    [couple.feature sort((abs(eig(n4tmp))))'];
-featurevector = ...
-    [featurevector eigtmp];
-fname = ...
-    [fname ['eig-r-' num2str(j)]];
-% --- damping ratio
-[freq_temp,damp_temp,~] = damp(n4tmp);
-freq_temp = freq_temp';
-damp_temp = damp_temp';
-featurevector = ...
-    [featurevector freq_temp];
-for i=1:length(freq_temp)
-    fname = ...
-        [fname ['naFreq-r-' num2str(j) '-' num2str(i)]];
-end
-featurevector = ...
-    [featurevector damp_temp];
-for i=1:length(damp_temp)
-    fname = ...
-        [fname ['damp-r-' num2str(j) '-' num2str(i)]];
-end
-% --- driven frequency \omega_d
-featurevector = ...
-    [featurevector freq_temp.*sqrt(1-damp_temp.^2)];
-for i=1:length(freq_temp)
-    fname = ...
-        [fname ['dampFreq-r-' num2str(j) '-' num2str(i)]];
-end
+% % --- eigenvalue
+% eigtmp = abs(A)*B;
+% eigtmp = eigtmp(eigtmp~=0);
+% %couple.feature = ...
+% %    [couple.feature sort((abs(eig(n4tmp))))'];
+% featurevector = ...
+%     [featurevector eigtmp];
+% fname = ...
+%     [fname ['eig-r-' num2str(j)]];
+% % --- damping ratio
+% [freq_temp,damp_temp,~] = damp(n4tmp);
+% freq_temp = freq_temp';
+% damp_temp = damp_temp';
+% featurevector = ...
+%     [featurevector freq_temp];
+% for i=1:length(freq_temp)
+%     fname = ...
+%         [fname ['naFreq-r-' num2str(j) '-' num2str(i)]];
+% end
+% featurevector = ...
+%     [featurevector damp_temp];
+% for i=1:length(damp_temp)
+%     fname = ...
+%         [fname ['damp-r-' num2str(j) '-' num2str(i)]];
+% end
+% % --- driven frequency \omega_d
+% featurevector = ...
+%     [featurevector freq_temp.*sqrt(1-damp_temp.^2)];
+% for i=1:length(freq_temp)
+%     fname = ...
+%         [fname ['dampFreq-r-' num2str(j) '-' num2str(i)]];
+% end
 
 end
 
