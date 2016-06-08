@@ -114,3 +114,15 @@ for i=1:length(couple)
 	plot(couple(i).feature(eigIx));
 end
 hold off
+
+
+
+
+
+figure(1)
+bar(FitObj.B(:,1))
+hold on
+bar(FitObj.B(:,30),'r')
+bar(FitObj.B(:,60),'g')
+bar(FitObj.B(:,90),'y')
+
