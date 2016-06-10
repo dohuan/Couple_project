@@ -12,7 +12,7 @@ tic
 nt = size(couple,2);
 nf = size(X,2);
 %kfold = floor(0.3*nt);
-kfold = 40;
+kfold = 5;
 fprintf('Number of folds: %d\n',kfold);
 % --- create fold indexes
 index = randperm(nt);
@@ -46,13 +46,15 @@ for i=1:kfold
             error_y_test = sum(sqrt((y_guess_test-y_test).^2));
             error_y_train = sum(sqrt((y_guess_train-y_train).^2));
             Bopt = value(B);
+            Btrack(i,:) = Bopt;
         case 1
             %----------------------- lasso regression -------------------------
             
             [FitObj,y_guess_train,y_guess_test] = ...
                    lassoRegression(X_train,y_train,X_test,y_test);
+            Btrack(i,:) = FitObj.B_optimal;
     end
-    Btrack(i,:) = FitObj.B_optimal;
+    
     %R2track(i,1) = getR2(y_test, y_guess_test);
     RMSEtrack(i,1) = rmseCal(y_test, y_guess_test);
     %yguessTrack(i,:) = y_guess_test;
@@ -86,24 +88,28 @@ h = figure(1);
 meanB = mean(Btrack);
 bar(meanB);
 hold on
-%errorbar(meanB,std(Btrack),'x');
-ix = find(abs(meanB)>1);
-B_select = meanB(ix);
-for j=1:length(ix)
-    text(ix(j)+2, B_select(j), f_name{ix(j)},'BackgroundColor',[1 1 1]);
-end
+errorbar(meanB,std(Btrack),'x');
+% ix = find(abs(meanB)>-100);
+% B_select = meanB(ix);
+% for j=1:length(ix)
+%     text(ix(j)+2, B_select(j), f_name{ix(j)},'BackgroundColor',[1 1 1]);
+% end
 axis tight
 box on
 ylabel('weights')
 xlabel('features')
+set(gca,'XTick',1:length(f_name),'XTickLabel',f_name);
+rotateXLabels(gca(),90);
 %saveas(h,[savePath loadFile{i} '_fname_CV.jpg']);
 
-figure(2);
-[Bsort,ix] = sort(meanB);
-fname_reorder = f_name(ix);
-bar(Bsort);
-set(gca,'XTick',1:length(f_name),'XTickLabel',fname_reorder);
-rotateXLabels(gca(),90);
+% figure(2);
+% [Bsort,ix] = sort(meanB);
+% hold on
+% fname_reorder = f_name(ix);
+% errorbar(Bsort,std(Btrack),'x');
+% bar(Bsort);
+% set(gca,'XTick',1:length(f_name),'XTickLabel',fname_reorder);
+% rotateXLabels(gca(),90);
 
 
 

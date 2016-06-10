@@ -1,7 +1,7 @@
 function [X,y,couple] = featureExtract(dataType, selectFavorite, percentThres)
 input_file = 'DataHC.mat'; %Joy stick data
 load(input_file);
-split_count = 7; % 7
+split_count = 6; % 6 for Domin, 7 for Warm
 stress_file = 'Globalnew.xls';
 couples_count = size(Data,2);% couple data starts at 3rd column , and have 8 elements for each couple
 invGain = tf(-1,1,0.5); % inverse static gain
@@ -140,7 +140,7 @@ eigtmp = abs(eig(A));
 [freq_tmp,damp_tmp,~] = damp(model);
 dampfreq_tmp = freq_tmp.*sqrt(1-damp_tmp.^2);
 
-for j=1:size(tmp,1)
+for j=size(tmp,1)
     B = tmp;
     B(j,:) = 1;
     n4tmp = ss(A,B,C,[], .5);
@@ -151,15 +151,15 @@ for j=1:size(tmp,1)
     couple.f_name = ...
         [couple.f_name ['norm-H2-' num2str(j)]];
     
-    couple.feature = ...
-        [couple.feature norm(n4tmp,inf)];
-    couple.f_name = ...
-        [couple.f_name ['norm-Hinf-' num2str(j)]];
+%     couple.feature = ...
+%         [couple.feature norm(n4tmp,inf)];
+%     couple.f_name = ...
+%         [couple.f_name ['norm-Hinf-' num2str(j)]];
     % --- eigvalue
-    couple.feature = ...
-        [couple.feature eigtmp(j)];
-    couple.f_name = ...
-        [couple.f_name ['eig-' num2str(j)]];
+%     couple.feature = ...
+%         [couple.feature eigtmp(j)];
+%     couple.f_name = ...
+%         [couple.f_name ['eig-' num2str(j)]];
     % --- natural freq
     couple.feature = ...
         [couple.feature freq_tmp(j)];
@@ -170,11 +170,11 @@ for j=1:size(tmp,1)
         [couple.feature damp_tmp(j)];
     couple.f_name = ...
         [couple.f_name ['damp-' num2str(j)]];
-    % --- damping freq
+    % --- damped freq
     couple.feature = ...
         [couple.feature dampfreq_tmp(j)];
     couple.f_name = ...
-        [couple.f_name ['dampFreq-' num2str(j)]];
+        [couple.f_name ['dampedFreq-' num2str(j)]];
     % --- time constant
     couple.feature = ...
         [couple.feature tautmp(j)];
@@ -186,11 +186,11 @@ for j=1:size(tmp,1)
         [couple.feature ostmp];
     couple.f_name = ...
         [couple.f_name ['overS-' num2str(j)]];
-    % --- real distance
-    couple.feature = ...
-        [couple.feature 1/tautmp(j)];
-    couple.f_name = ...
-        [couple.f_name ['realDist-' num2str(j)]];
+    % --- real part
+%     couple.feature = ...
+%         [couple.feature 1/tautmp(j)];
+%     couple.f_name = ...
+%         [couple.f_name ['realDist-' num2str(j)]];
     
     %         featurevector_r = ...
     %             [featurevector_r norm(n4tmp,inf)];

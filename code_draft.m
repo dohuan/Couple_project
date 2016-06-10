@@ -126,3 +126,30 @@ bar(FitObj.B(:,30),'r')
 bar(FitObj.B(:,60),'g')
 bar(FitObj.B(:,90),'y')
 
+
+
+% ----
+load DataHC
+data = Data(1).data(:,4);
+p = polyfit(1:length(data),data',6);
+data_  = polyval(p,1:length(data));
+e = data - data_';
+
+dataw = Data(1).data(:,8);
+pw = polyfit(1:length(dataw),dataw',6);
+dataw_  = polyval(p,1:length(dataw));
+ew = dataw - dataw_';
+
+h_ori = mscohere(data,dataw);
+he = mscohere(e,ew);
+
+figure(1)
+hold on
+plot(data);
+plot(data_);
+
+figure(2)
+hold on
+plot(h_ori)
+plot(he,'--')
+legend('original','untrended')
