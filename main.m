@@ -6,7 +6,7 @@ set(0,'defaultfigurecolor',[1 1 1])
 tic
 %addpath(genpath('C:\Users\dohuan.ME197\Dropbox\Graduate Research(DB)\YALMIP'))
 
-[X,y,couple] = featureExtract('warm', 'both', 30);
+[X,y,couple] = featureExtract('warm', 'both', 30); % domi 40 warm 30
 %[X,y,couple] = featureExtract('warm', 'wife', []);
 
 nt = size(couple,2);
