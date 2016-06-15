@@ -119,15 +119,30 @@ n4s2 = n4sid(z, 5, Opt2); % 5
 end
 
 function couple = featureFromModel(couple, model)
-[wn,xeta] = damp(model);
-tau = 1./(wn.*xeta);
-[tautmp,ix] = sort(tau);
-
+% --- Create a centerized pole (average of eigenvalues on upper half plane)
 [V,A] = eig(model.A);
 A = diag(A);
-A = A(ix);
-A = diag(A);
-V = V(:,ix);
+ix = [];
+for i=1:length(A)
+    if (isreal(A(i))==1 || imag(A(i))>0)
+        ix = [ix; i];
+    end
+end
+A = mean(A(ix));
+V = mean(V(:,ix),2);
+
+% --- Sort modes by time constant \tau
+% [wn,xeta] = damp(model);
+% tau = 1./(wn.*xeta);
+% [tautmp,ix] = sort(tau);
+% 
+% [V,A] = eig(model.A);
+% A = diag(A);
+% A = A(ix);
+% A = diag(A);
+% V = V(:,ix);
+
+% --- Sort modes by eigenvalues
 %[A,I] = sort(diag(A),1,'descend');
 
 %[A,I] = sort(diag(A));
@@ -136,8 +151,9 @@ V = V(:,ix);
 
 C = model.C*V;
 tmp = zeros(size(A,1),1);
-eigtmp = abs(eig(A));
-[freq_tmp,damp_tmp,~] = damp(model);
+%eigtmp = abs(eig(A));
+n4tmp = ss(A,1,C,[], .5);
+[freq_tmp,damp_tmp,~] = damp(n4tmp);
 dampfreq_tmp = freq_tmp.*sqrt(1-damp_tmp.^2);
 
 for j=size(tmp,1)
@@ -177,7 +193,8 @@ for j=size(tmp,1)
         [couple.f_name ['dampedFreq-' num2str(j)]];
     % --- time constant
     couple.feature = ...
-        [couple.feature tautmp(j)];
+        [couple.feature 1/(freq_tmp(j)*damp_tmp(j))];
+        %[couple.feature tautmp(j)];
     couple.f_name = ...
         [couple.f_name ['tau-' num2str(j)]];
     % --- overshoot
