@@ -130,31 +130,37 @@ for i=1:length(A)
 end
 A = mean(A(ix));
 V = mean(V(:,ix),2);
+C = model.C*V;
+tmp = zeros(size(A,1),1);
+n4tmp = ss(A,1,C,[], .5);
+[freq_tmp,damp_tmp,~] = damp(n4tmp);
+dampfreq_tmp = freq_tmp.*sqrt(1-damp_tmp.^2);
 
 % --- Sort modes by time constant \tau
 % [wn,xeta] = damp(model);
 % tau = 1./(wn.*xeta);
-% [tautmp,ix] = sort(tau);
-% 
+% [~,ix] = sort(tau);
 % [V,A] = eig(model.A);
 % A = diag(A);
 % A = A(ix);
 % A = diag(A);
 % V = V(:,ix);
+% C = model.C*V;
+% tmp = zeros(size(A,1),1);
+% [freq_tmp,damp_tmp,~] = damp(model);
+% dampfreq_tmp = freq_tmp.*sqrt(1-damp_tmp.^2);
+
 
 % --- Sort modes by eigenvalues
 %[A,I] = sort(diag(A),1,'descend');
-
-%[A,I] = sort(diag(A));
-%A = diag(A);
-%V = V(:,I);
-
-C = model.C*V;
-tmp = zeros(size(A,1),1);
-%eigtmp = abs(eig(A));
-n4tmp = ss(A,1,C,[], .5);
-[freq_tmp,damp_tmp,~] = damp(n4tmp);
-dampfreq_tmp = freq_tmp.*sqrt(1-damp_tmp.^2);
+% [V,A] = eig(model.A);
+% [A,I] = sort(diag(A));
+% A = diag(A);
+% V = V(:,I);
+% C = model.C*V;
+% tmp = zeros(size(A,1),1);
+% [freq_tmp,damp_tmp,~] = damp(model);
+% dampfreq_tmp = freq_tmp.*sqrt(1-damp_tmp.^2);
 
 for j=size(tmp,1)
     B = tmp;

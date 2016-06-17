@@ -12,7 +12,7 @@ tic
 nt = size(couple,2);
 nf = size(X,2);
 %kfold = floor(0.3*nt);
-kfold = 5;
+kfold = 10;
 fprintf('Number of folds: %d\n',kfold);
 % --- create fold indexes
 index = randperm(nt);
