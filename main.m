@@ -53,8 +53,6 @@ for i=1:kfold
             [FitObj,y_guess_train,y_guess_test] = ...
                    lassoRegression(X_train,y_train,X_test,y_test);
             Btrack(i,:) = FitObj.B_optimal;
-        case 2
-            
     end
     
     %R2track(i,1) = getR2(y_test, y_guess_test);

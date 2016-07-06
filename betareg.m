@@ -13,7 +13,7 @@
 %  BASED ON: BETA REGRESSION FOR MODELLING RATES AND PROPORTIONS, Francisco Cribari & Silvia Ferrari. 
 
 
-function betareg(vy, mX);
+function [pseudoR2,vP] = betareg(vy, mX)
 format short g;
 n = length(vy);
 p = size(mX,2);
@@ -43,6 +43,9 @@ yvar = var(vy);
 
 % starting values
 vps = [betaols;(mean( 1 ./ (olserrorvar*(olsfitted .* (1-olsfitted)))) - 1)];
+if (vps(end)<=0)
+    vps(end) = - vps(end);
+end
 
 disp(sprintf('\nBETA REGRESSION ESTIMATION'));
 disp(sprintf('--------------------------')); 

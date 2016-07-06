@@ -153,3 +153,16 @@ hold on
 plot(h_ori)
 plot(he,'--')
 legend('original','untrended')
+
+
+
+
+
+
+
+
+
+
+
+
+
