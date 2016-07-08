@@ -5,14 +5,15 @@ set(0,'defaultfigurecolor',[1 1 1])
 %%
 tic
 %addpath(genpath('C:\Users\dohuan.ME197\Dropbox\Graduate Research(DB)\YALMIP'))
-
-[X,y,couple] = featureExtract('warm', 'both', 30); % domi 40 warm 30
-%[X,y,couple] = featureExtract('warm', 'wife', []);
+addpath(genpath('C:\Users\dohuan\Google Drive\Graduate Research(DB)\YALMIP'))
+varType = 'domi';
+[X,y,couple] = featureExtract(varType, 'both', 40); % domi 40 warm 30
+%[X,y,couple] = featureExtract(varType, 'wife', []);
 
 nt = size(couple,2);
 nf = size(X,2);
 %kfold = floor(0.3*nt);
-kfold = 10;
+kfold = nt;
 fprintf('Number of folds: %d\n',kfold);
 % --- create fold indexes
 index = randperm(nt);
@@ -23,6 +24,21 @@ R2track = [];
 yguessTrack = [];
 ytrueTrack = [];
 minIndextrack =[];
+pre = 0;
+
+% --- Write data to an excel file
+if strcmp(varType,'domi')==1
+    filename = 'Dominance.xlsx';
+else
+    filename = 'Warmth.xlsx';
+end
+A = {'Couple ID','H2 norm','Damping ratio','overshoot','marital satisfaction'};
+for i=1:length(couple)
+    %xlswrite(filename,{couple(i).id,X(i,1),X(i,2),X(i,3),y(i)});
+    A = [A; {couple(i).id,X(i,1),X(i,2),X(i,3),y(i)}];
+end
+xlswrite(filename,A);
+
 
 for i=1:kfold
     fprintf('fold number: %d/%d\n',i,kfold);
@@ -34,7 +50,7 @@ for i=1:kfold
     X_train(test_ix,:) = [];
     y_train(test_ix,:) = [];
     % --- Choose type of regression: Linear or LASSO
-    reg_mode = 1; % 0: linear, 1: Lasso
+    reg_mode = 0; % 0: linear, 1: Lasso
     switch(reg_mode)
         case 0
             %%----------------------- linear regression -----------------------
@@ -57,6 +73,7 @@ for i=1:kfold
     
     %R2track(i,1) = getR2(y_test, y_guess_test);
     RMSEtrack(i,1) = rmseCal(y_test, y_guess_test);
+    pre = pre + mean((y_guess_test-y_test).^2);
     %yguessTrack(i,:) = y_guess_test;
     %ytrueTrack(i,:) = y_test;
     %minIndextrack(i,1) = FitObj.minIndex;
@@ -80,6 +97,7 @@ end
 % time_run = toc;
 % fprintf('\nRun time: %.2f minutes\n',time_run/60);
 
+fprintf('PRESS: %.2f\n',pre);
 
  % --- Export figures
 fprintf('Mean and Std of RMSE: %.2f %.2f\n',mean(RMSEtrack),std(RMSEtrack));
@@ -101,7 +119,6 @@ xlabel('features')
 set(gca,'XTick',1:length(f_name),'XTickLabel',f_name);
 rotateXLabels(gca(),90);
 %saveas(h,[savePath loadFile{i} '_fname_CV.jpg']);
-
 % figure(2);
 % [Bsort,ix] = sort(meanB);
 % hold on
